@@ -1,20 +1,7 @@
-<img width="572" height="544" alt="image" src="https://github.com/user-attachments/assets/0fe98a20-5e00-45ed-925d-b7617499dfc6" /># Retail Insights Streaming Platform
+# Retail Insights Streaming Platform
 
-## Architecture
-```mermaid
-flowchart LR
- R[Retailer websites / SDKs] -->|HTTPS events| G[Ingestion gateway]
- G --> K[(Kafka topics)]
- K --> M[(MongoDB raw events)]
- K --> F[Apache Flink: dedupe, event-time, stateful attribution]
- F --> DB[(MySQL aggregate buckets)]
- C[Marketer clients] -->|OAuth2/JWT| LB[Load balancer]
- LB --> API[Spring Boot Insights API]
- API --> DB
- API -. metrics/logs/traces .-> O[Prometheus + Grafana]
- K -. consumer lag .-> O
- F -. checkpoints/processing delay .-> O
-```
+## Design Diagram and details
+https://docs.google.com/document/d/1qw3Ww01RhfylNCkvTfgNjP1RVIsSo2lDbDH1jAEiT3A
 
 ## Flow
 1. Website emits `eventId`, `tenantId`, `campaignId`, `eventType`, `eventTime`, and an available customer/session/browser ID.
