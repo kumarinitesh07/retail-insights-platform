@@ -45,7 +45,7 @@ Also supports `impressions` and `clickToBasket`. Time range is `[startTime, endT
 - Retention/privacy: TTL/retention for raw events, archival, deletion/correction across raw events, state, aggregates, caches and backups per policy.
 - Cost: tenant-level usage, retention tiers, right-sizing, capacity and storage growth alerts.
 
-##Deployment Overview
+## Deployment Overview
 The platform will be deployed as independently scalable services.
 
 Ingestion API: Multiple instances behind a load balancer to receive and validate events.
