@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*; 
 import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
-\
+
 @RestController @RequestMapping("/ad") public class InsightsController {
  private final InsightsService service;
  public InsightsController(InsightsService service) 
