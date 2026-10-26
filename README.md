@@ -1,4 +1,4 @@
-# Retail Insights Streaming Platform
+<img width="572" height="544" alt="image" src="https://github.com/user-attachments/assets/0fe98a20-5e00-45ed-925d-b7617499dfc6" /># Retail Insights Streaming Platform
 
 ## Architecture
 ```mermaid
@@ -45,7 +45,31 @@ Also supports `impressions` and `clickToBasket`. Time range is `[startTime, endT
 - Retention/privacy: TTL/retention for raw events, archival, deletion/correction across raw events, state, aggregates, caches and backups per policy.
 - Cost: tenant-level usage, retention tiers, right-sizing, capacity and storage growth alerts.
 
-Design Decisions and Trade-offs
+##Deployment Overview
+The platform will be deployed as independently scalable services.
+
+Ingestion API: Multiple instances behind a load balancer to receive and validate events.
+
+Kafka: A partitioned cluster to buffer events and support parallel processing.
+
+Raw Event Storage: MongoDB stores raw events for historical analysis and investigation.
+
+Stream Processing: Flink processes events continuously, with checkpointing for recovery.
+
+Aggregated Insights Store: MySQL stores pre-aggregated campaign metrics for fast API queries.
+
+Insights API: Multiple Spring Boot instances behind a load balancer serve marketer requests.
+
+Reliability and Monitoring
+Monitor API latency and errors, Kafka consumer lag, Flink processing delays, checkpoint failures, and database health. Configure alerts for service failures and processing backlogs.
+
+Security
+Authenticate requests, enforce tenant-level authorization, encrypt data in transit, and restrict access to services and databases.
+
+Scaling
+Scale API instances horizontally. Scale Kafka partitions and Flink parallelism according to event volume and processing capacity. Monitor MySQL query performance and storage growth to determine when additional capacity is required.
+
+ ## Design Decisions and Trade-offs
 1. Kafka — Event Ingestion
 Why: Decouples event producers from consumers and buffers traffic spikes.
 
@@ -94,6 +118,7 @@ Decision: Scale ingestion, processing, and API services independently.
 Benefit: Capacity can be added where workload demands it.
 
 Trade-off: Partition counts, processing parallelism, storage retention, and infrastructure costs require ongoing monitoring.
+
 
 
 ## Run
