@@ -45,11 +45,56 @@ Also supports `impressions` and `clickToBasket`. Time range is `[startTime, endT
 - Retention/privacy: TTL/retention for raw events, archival, deletion/correction across raw events, state, aggregates, caches and backups per policy.
 - Cost: tenant-level usage, retention tiers, right-sizing, capacity and storage growth alerts.
 
-## Trade-offs
-- Real-time freshness vs completeness: delayed events may correct earlier event-time buckets.
-- Unique customers vs event counts: define metric semantics; distinct counting requires identity/window strategy.
-- Cross-device attribution only works when a permitted identity link exists.
-- Exactly-once end-to-end behavior is not automatic; combine stable event IDs, checkpoints, idempotent sinks and reconciliation.
+Design Decisions and Trade-offs
+1. Kafka — Event Ingestion
+Why: Decouples event producers from consumers and buffers traffic spikes.
+
+Benefit: Consumers can recover from temporary failures by replaying retained events.
+
+Trade-off: Adds infrastructure and operational complexity.
+
+2. Apache Flink — Stream Processing
+Why: Supports stateful processing, event-time windows, and click-to-basket attribution.
+
+Benefit: Enables continuous metric computation with low latency.
+
+Trade-off: State management, checkpointing, and late-event handling require careful configuration.
+
+3. MongoDB — Raw Event Storage
+Why: Provides flexible storage for raw event records.
+
+Benefit: Supports historical analysis and investigation.
+
+Trade-off: Long-term storage at very high volumes may be more economical in object storage.
+
+4. MySQL — Aggregated Insights
+Why: Stores pre-calculated campaign metrics for API queries.
+
+Benefit: Avoids scanning large volumes of raw events for every request.
+
+Trade-off: Requires suitable indexes and an approach for updating aggregates when events are duplicated or arrive late.
+
+5. Pre-aggregation vs. Query-time Computation
+Decision: Calculate metrics continuously and store aggregates in MySQL.
+
+Benefit: Improves API response time and reduces repeated computation.
+
+Trade-off: Adds processing complexity to maintain accurate aggregates.
+
+6. Accuracy vs. Latency
+Decision: Use event-time processing and define a policy for late-arriving events.
+
+Benefit: Produces more reliable metrics when events arrive out of order.
+
+Trade-off: Some metrics may be corrected after their initial publication.
+
+7. Scalability vs. Cost
+Decision: Scale ingestion, processing, and API services independently.
+
+Benefit: Capacity can be added where workload demands it.
+
+Trade-off: Partition counts, processing parallelism, storage retention, and infrastructure costs require ongoing monitoring.
+
 
 ## Run
 Requires Java 17+ and Maven: `mvn spring-boot:run`
